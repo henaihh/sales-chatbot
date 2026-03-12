@@ -19,66 +19,51 @@ interface TestResult {
   category?: string
 }
 
-// Mock function to simulate bot testing
-// In production, this will call the actual AI router
+// Real API call to test bot with Anthropic Claude
 async function testBotResponse(question: string, itemId?: string): Promise<TestResult> {
-  // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 1500))
+  try {
+    const response = await fetch('/api/test-bot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question,
+        itemId,
+        type: 'question'
+      })
+    })
 
-  // Simple logic to demonstrate different tiers and responses
-  const escalationKeywords = ['problema', 'mal', 'reclamo', 'denuncia', 'defensa', 'legal']
-  const complexKeywords = ['envío', 'pedido', 'seguimiento', 'factura', 'devolucion']
-  
-  const shouldEscalate = escalationKeywords.some(keyword => 
-    question.toLowerCase().includes(keyword)
-  )
-  
-  const needsSonnet = complexKeywords.some(keyword => 
-    question.toLowerCase().includes(keyword)
-  )
+    if (!response.ok) {
+      throw new Error('API request failed')
+    }
 
-  if (shouldEscalate) {
+    const data = await response.json()
+    
+    return {
+      tier: data.tier,
+      response: data.response || data.draft || 'Sin respuesta disponible',
+      model: data.model,
+      tokensUsed: data.tokensUsed || 0,
+      costEstimate: data.costEstimate || 0,
+      processingTime: data.processingTime || 0,
+      escalated: data.escalated || false,
+      category: data.category
+    }
+  } catch (error) {
+    console.error('Error testing bot:', error)
+    
+    // Fallback to simulated response if API fails
     return {
       tier: 4,
-      response: '',
-      model: 'escalation',
+      response: 'Error: No se pudo conectar con la API de IA. Verifica la configuración de Anthropic.',
+      model: 'error',
       tokensUsed: 0,
       costEstimate: 0,
-      processingTime: 1200,
+      processingTime: 0,
       escalated: true,
-      category: 'complaint'
+      category: 'api_error'
     }
-  }
-
-  if (needsSonnet) {
-    return {
-      tier: 3,
-      response: '¡Hola! Entiendo tu consulta sobre envíos. Te puedo ayudar con información detallada sobre el seguimiento de tu pedido y las opciones de envío disponibles. ¿Podrías compartir tu número de pedido para darte información más específica? Saludos, Vicus Store',
-      model: 'claude-sonnet-4-6',
-      tokensUsed: 1250,
-      costEstimate: 0.00375,
-      processingTime: 1200,
-      escalated: false,
-      category: 'shipping_inquiry'
-    }
-  }
-
-  // Simple questions go to Haiku
-  const simpleResponses = [
-    '¡Hola! Sí, tenemos stock disponible. Puedes realizar tu compra con normalidad. Cualquier duda adicional no dudes en consultar. Saludos, Vicus Store',
-    '¡Hola! El precio publicado incluye IVA. Aceptamos todos los medios de pago de Mercado Pago. Saludos, Vicus Store',
-    '¡Hola! Realizamos envíos a todo el país a través de Mercado Envíos. El cálculo se hace automáticamente según tu código postal. Saludos, Vicus Store'
-  ]
-
-  return {
-    tier: 2,
-    response: simpleResponses[Math.floor(Math.random() * simpleResponses.length)],
-    model: 'claude-haiku-4-5',
-    tokensUsed: 420,
-    costEstimate: 0.00042,
-    processingTime: 800,
-    escalated: false,
-    category: 'product_inquiry'
   }
 }
 

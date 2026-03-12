@@ -32,8 +32,8 @@ export default function InfoPage() {
               <Badge variant="success">✅ Completo</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Test Bot (simulado)</span>
-              <Badge variant="success">✅ Funcional</Badge>
+              <span className="text-sm">Test Bot (API real Claude)</span>
+              <Badge variant="success">✅ Anthropic API</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Gestión de escalaciones</span>
