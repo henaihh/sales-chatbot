@@ -31,11 +31,7 @@ export async function callHaiku(systemPrompt: string, userMessage: string): Prom
     const response = await anthropic.messages.create({
       model,
       max_tokens: 500,
-      system: [{
-        type: "text", 
-        text: systemPrompt,
-        cache_control: { type: "ephemeral" }
-      }],
+      system: systemPrompt,
       messages: [{
         role: "user",
         content: userMessage
@@ -68,11 +64,7 @@ export async function callSonnet(systemPrompt: string, userMessage: string): Pro
     const response = await anthropic.messages.create({
       model,
       max_tokens: 1000,
-      system: [{
-        type: "text",
-        text: systemPrompt,
-        cache_control: { type: "ephemeral" }
-      }],
+      system: systemPrompt,
       messages: [{
         role: "user", 
         content: userMessage
