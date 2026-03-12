@@ -12,12 +12,14 @@ import {
   Settings, 
   MessageSquare,
   Power,
-  TestTube 
+  TestTube,
+  Info
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Inicio', href: '/dashboard', icon: Home },
   { name: 'Test Bot', href: '/dashboard/test', icon: TestTube },
+  { name: 'Estado del Proyecto', href: '/dashboard/info', icon: Info },
   { name: 'Escalaciones', href: '/dashboard/escalated', icon: AlertTriangle },
   { name: 'Historial', href: '/dashboard/history', icon: History },
   { name: 'Analíticas', href: '/dashboard/analytics', icon: BarChart3 },
