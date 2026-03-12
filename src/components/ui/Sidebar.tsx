@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { clsx } from 'clsx'
+import Link from 'next/link'
 import { 
   Home, 
   AlertTriangle, 
@@ -13,7 +13,9 @@ import {
   MessageSquare,
   Power,
   TestTube,
-  Info
+  Info,
+  Menu,
+  X
 } from 'lucide-react'
 
 const navigation = [
@@ -28,92 +30,123 @@ const navigation = [
 ]
 
 interface SidebarProps {
-  isEnabled: boolean
-  onToggleBot: () => void
+  botEnabled: boolean
+  onToggleBot: (enabled: boolean) => void
 }
 
-export function Sidebar({ isEnabled, onToggleBot }: SidebarProps) {
+export function Sidebar({ botEnabled, onToggleBot }: SidebarProps) {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  return (
-    <div className="flex h-full w-64 flex-col bg-white border-r border-slate-200">
+  const closeMobileMenu = () => setMobileMenuOpen(false)
+
+  const SidebarContent = () => (
+    <>
       {/* Header */}
-      <div className="flex h-16 items-center border-b border-slate-200 px-6">
+      <div className="p-6 border-b border-slate-200">
         <div className="flex items-center gap-3">
           <MessageSquare className="h-8 w-8 text-indigo-600" />
           <div>
-            <h1 className="text-lg font-bold text-slate-900">AutoResponder</h1>
-            <p className="text-xs text-slate-500">MercadoLibre</p>
+            <h2 className="text-lg font-semibold text-slate-900">Sales Bot</h2>
+            <p className="text-sm text-slate-500">MercadoLibre AI</p>
           </div>
         </div>
       </div>
 
-      {/* Bot Status & Toggle */}
-      <div className="border-b border-slate-200 p-6">
+      {/* Bot Toggle */}
+      <div className="p-6 border-b border-slate-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={clsx(
-              'h-2 w-2 rounded-full',
-              isEnabled ? 'bg-green-500' : 'bg-red-500'
-            )} />
-            <span className="text-sm font-medium text-slate-700">
-              {isEnabled ? 'Bot Activo' : 'Bot Inactivo'}
-            </span>
+            <Power className={`h-5 w-5 ${botEnabled ? 'text-green-500' : 'text-slate-400'}`} />
+            <span className="text-sm font-medium text-slate-900">Bot Status</span>
           </div>
           <button
-            onClick={onToggleBot}
-            className={clsx(
-              'flex h-6 w-11 items-center rounded-full px-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500',
-              isEnabled ? 'bg-indigo-600' : 'bg-slate-300'
-            )}
+            onClick={() => onToggleBot(!botEnabled)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              botEnabled ? 'bg-green-500' : 'bg-slate-300'
+            }`}
           >
-            <div
-              className={clsx(
-                'h-5 w-5 rounded-full bg-white transition-transform',
-                isEnabled ? 'translate-x-5' : 'translate-x-0'
-              )}
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                botEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
             />
           </button>
         </div>
-        {!isEnabled && (
-          <p className="mt-2 text-xs text-slate-500">
-            Usa el Test Bot para probar antes de activar
-          </p>
-        )}
+        <p className="mt-2 text-xs text-slate-500">
+          {botEnabled ? 'Bot activo - Respondiendo automáticamente' : 'Bot desactivado - No responde automáticamente'}
+        </p>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 p-4 space-y-1">
         {navigation.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
-
+          
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={clsx(
-                'sidebar-item',
-                isActive && 'active'
-              )}
+              onClick={closeMobileMenu}
+              className={`sidebar-item ${isActive ? 'active' : ''}`}
             >
-              <Icon className="h-4 w-4" />
-              {item.name}
+              <Icon className="h-5 w-5 flex-shrink-0" />
+              <span>{item.name}</span>
             </Link>
           )
         })}
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-slate-200 p-4">
-        <div className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-slate-600">
-          <Power className="h-4 w-4" />
-          <div className="flex-1">
-            <p className="font-medium">Vicus Admin</p>
-            <p className="text-xs text-slate-500">vicus@example.com</p>
+      <div className="p-4 border-t border-slate-200">
+        <p className="text-xs text-slate-400 text-center">
+          MercadoLibre Auto-Responder v1.0
+        </p>
+      </div>
+    </>
+  )
+
+  return (
+    <>
+      {/* Mobile menu button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="p-2 bg-white rounded-md shadow-md border border-slate-200"
+        >
+          <Menu className="h-6 w-6 text-slate-600" />
+        </button>
+      </div>
+
+      {/* Mobile sidebar */}
+      <div className={`lg:hidden fixed inset-0 z-40 ${mobileMenuOpen ? 'block' : 'hidden'}`}>
+        {/* Backdrop */}
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50"
+          onClick={closeMobileMenu}
+        />
+        
+        {/* Sidebar */}
+        <div className="fixed left-0 top-0 bottom-0 w-80 max-w-[80vw] bg-white shadow-xl flex flex-col">
+          {/* Close button */}
+          <div className="p-4 border-b border-slate-200">
+            <button
+              onClick={closeMobileMenu}
+              className="p-2 rounded-md hover:bg-slate-100"
+            >
+              <X className="h-6 w-6 text-slate-600" />
+            </button>
           </div>
+          
+          <SidebarContent />
         </div>
       </div>
-    </div>
+
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex lg:w-64 lg:fixed lg:inset-y-0 lg:flex-col lg:bg-white lg:border-r lg:border-slate-200">
+        <SidebarContent />
+      </div>
+    </>
   )
 }

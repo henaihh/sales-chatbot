@@ -1,48 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Sidebar } from '@/components/ui/Sidebar'
-
-// TODO: This will come from Supabase in production
-// For now, using localStorage to persist the bot state
-function useBotState() {
-  const [isEnabled, setIsEnabled] = useState(false)
-
-  useEffect(() => {
-    // Load state from localStorage on mount
-    const saved = localStorage.getItem('bot-enabled')
-    if (saved !== null) {
-      setIsEnabled(JSON.parse(saved))
-    }
-  }, [])
-
-  const toggleBot = async () => {
-    const newState = !isEnabled
-    setIsEnabled(newState)
-    
-    // Save to localStorage
-    localStorage.setItem('bot-enabled', JSON.stringify(newState))
-    
-    // TODO: In production, update the seller_config.is_enabled in Supabase
-    // await updateSellerConfig({ is_enabled: newState })
-  }
-
-  return { isEnabled, toggleBot }
-}
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { isEnabled, toggleBot } = useBotState()
+  const [botEnabled, setBotEnabled] = useState(false)
 
   return (
-    <div className="flex h-screen bg-slate-50">
-      <Sidebar isEnabled={isEnabled} onToggleBot={toggleBot} />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+    <div className="min-h-screen bg-slate-50">
+      <Sidebar botEnabled={botEnabled} onToggleBot={setBotEnabled} />
+      
+      {/* Main content */}
+      <div className="lg:pl-64">
+        <main className="min-h-screen">
+          {/* Mobile header spacing */}
+          <div className="lg:hidden h-16" />
+          
+          {/* Content */}
+          <div className="px-4 py-6 lg:px-8 lg:py-8">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
