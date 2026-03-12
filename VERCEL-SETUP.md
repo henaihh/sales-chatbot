@@ -49,6 +49,10 @@ ANTHROPIC_API_KEY=sk-ant-api03-[your-anthropic-key-here]
 2. Implement MercadoLibre API for production use  
 3. Add knowledge base CRUD functionality
 
+## 📝 Note on Cron Jobs:
+- **Removed cron jobs** to be compatible with Vercel Hobby plan
+- Future MercadoLibre integration will use **polling-based processing** instead
+
 ---
 **🎯 Current Status**: Frontend complete + Real Anthropic AI integration
 **🚀 Ready for**: Demo, testing, and client presentations

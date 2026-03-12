@@ -161,24 +161,10 @@ El dashboard muestra:
 - Costos de IA
 - Historial completo de interacciones
 
-## 🔄 Cron Jobs
+## 🔄 Background Processing
 
-Configurar en Vercel (vercel.json):
-
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/process-pending",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/meli/token/refresh", 
-      "schedule": "0 */5 * * *"
-    }
-  ]
-}
-```
+**Current Version**: No cron jobs (Vercel Hobby plan compatible)  
+**Future Version**: Will implement polling-based processing for MercadoLibre integration
 
 ## 🚀 Deploy en Vercel
 
