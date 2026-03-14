@@ -91,103 +91,77 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-600 mt-1">Resumen de actividad del bot de ventas</p>
+      <div className="mb-4 lg:mb-6">
+        <h1 className="text-xl lg:text-3xl font-bold text-slate-900">Dashboard</h1>
+        <p className="text-sm text-slate-600 mt-1">Resumen de actividad del bot de ventas</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="stats-grid mb-8">
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Consultas Hoy</p>
-              <p className="text-2xl lg:text-3xl font-bold text-slate-900">{mockStats.todayQuestions}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-4 lg:mb-8">
+        {[
+          { label: 'Consultas Hoy', value: mockStats.todayQuestions, color: 'text-slate-900', icon: MessageSquare, iconColor: 'text-blue-500' },
+          { label: 'Automatización', value: `${mockStats.automationRate}%`, color: 'text-green-600', icon: TrendingUp, iconColor: 'text-green-500' },
+          { label: 'Tiempo Prom.', value: mockStats.avgResponseTime, color: 'text-indigo-600', icon: Clock, iconColor: 'text-indigo-500' },
+          { label: 'Escalaciones', value: mockStats.escalatedCount, color: 'text-amber-600', icon: AlertTriangle, iconColor: 'text-amber-500' },
+        ].map(({ label, value, color, icon: Icon, iconColor }, i) => (
+          <div key={i} className="bg-white border border-slate-200 rounded-lg p-3 lg:p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs lg:text-sm font-medium text-slate-500">{label}</p>
+                <p className={`text-lg lg:text-2xl font-bold ${color} mt-0.5`}>{value}</p>
+              </div>
+              <Icon className={`h-5 w-5 lg:h-7 lg:w-7 ${iconColor} flex-shrink-0`} />
             </div>
-            <MessageSquare className="h-8 w-8 text-blue-500" />
           </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Automatización</p>
-              <p className="text-2xl lg:text-3xl font-bold text-green-600">{mockStats.automationRate}%</p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-green-500" />
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Tiempo Promedio</p>
-              <p className="text-2xl lg:text-3xl font-bold text-indigo-600">{mockStats.avgResponseTime}</p>
-            </div>
-            <Clock className="h-8 w-8 text-indigo-500" />
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Escalaciones</p>
-              <p className="text-2xl lg:text-3xl font-bold text-amber-600">{mockStats.escalatedCount}</p>
-            </div>
-            <AlertTriangle className="h-8 w-8 text-amber-500" />
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Recent Interactions */}
-      <div className="card">
-        <div className="mb-6">
-          <h2 className="text-lg lg:text-xl font-semibold text-slate-900">Interacciones Recientes</h2>
-          <p className="text-slate-600 text-sm">Últimas consultas procesadas por el bot</p>
+      {/* Recent Interactions - Mobile: card list, Desktop: table */}
+      <div>
+        <div className="mb-3">
+          <h2 className="text-base lg:text-xl font-semibold text-slate-900">Interacciones Recientes</h2>
+          <p className="text-slate-500 text-xs">Últimas consultas procesadas</p>
         </div>
 
-        <div className="table-container">
+        {/* Mobile: card list */}
+        <div className="lg:hidden space-y-2">
+          {mockInteractions.map((interaction) => (
+            <div key={interaction.id} className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {getTypeBadge(interaction.type)}
+                  {getTierBadge(interaction.tier)}
+                </div>
+                {getStatusBadge(interaction.status)}
+              </div>
+              <p className="text-sm text-slate-900 leading-snug mb-1">{interaction.buyerText}</p>
+              <p className="text-xs text-slate-400">{interaction.itemTitle} · {formatTime(interaction.timestamp)}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden lg:block table-container">
           <table className="table">
             <thead>
               <tr>
-                <th className="mobile-hidden">Tipo</th>
+                <th>Tipo</th>
                 <th>Consulta</th>
-                <th className="mobile-hidden">Tier</th>
+                <th>Tier</th>
                 <th>Estado</th>
-                <th className="mobile-hidden">Hora</th>
+                <th>Hora</th>
               </tr>
             </thead>
             <tbody>
               {mockInteractions.map((interaction) => (
                 <tr key={interaction.id}>
-                  <td className="mobile-hidden">
-                    {getTypeBadge(interaction.type)}
-                  </td>
+                  <td>{getTypeBadge(interaction.type)}</td>
                   <td>
-                    <div>
-                      <p className="font-medium text-slate-900 truncate max-w-xs lg:max-w-md">
-                        {interaction.buyerText}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1 lg:hidden">
-                        {interaction.itemTitle}
-                      </p>
-                      <div className="lg:hidden mt-2 mobile-stack">
-                        {getTypeBadge(interaction.type)}
-                        {getTierBadge(interaction.tier)}
-                      </div>
-                    </div>
+                    <p className="font-medium text-slate-900 truncate max-w-md">{interaction.buyerText}</p>
                   </td>
-                  <td className="mobile-hidden">
-                    {getTierBadge(interaction.tier)}
-                  </td>
-                  <td>
-                    {getStatusBadge(interaction.status)}
-                  </td>
-                  <td className="mobile-hidden">
-                    <span className="text-xs text-slate-500">
-                      {formatTime(interaction.timestamp)}
-                    </span>
-                  </td>
+                  <td>{getTierBadge(interaction.tier)}</td>
+                  <td>{getStatusBadge(interaction.status)}</td>
+                  <td><span className="text-xs text-slate-500">{formatTime(interaction.timestamp)}</span></td>
                 </tr>
               ))}
             </tbody>

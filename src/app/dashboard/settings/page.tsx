@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Settings, Save, RotateCcw } from 'lucide-react'
 
-// Mock data - in production this comes from Supabase
 const mockSellerConfig = {
   store_name: 'Vicus Store',
   tone: 'friendly',
@@ -24,73 +23,56 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setIsSaving(true)
-    
-    try {
-      // TODO: Save to Supabase
-      // await updateSellerConfig(config)
-      
-      // Simulate save
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
-      
-    } catch (error) {
-      console.error('Error saving config:', error)
-    } finally {
-      setIsSaving(false)
-    }
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setSaved(true)
+    setTimeout(() => setSaved(false), 3000)
+    setIsSaving(false)
   }
 
-  const handleReset = () => {
-    setConfig(mockSellerConfig)
-  }
+  const handleReset = () => setConfig(mockSellerConfig)
 
   const handleChange = (field: keyof typeof config, value: string) => {
     setConfig(prev => ({ ...prev, [field]: value }))
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <Settings className="h-8 w-8 text-indigo-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Configuración General</h1>
-            <p className="text-slate-600">Configura la información básica de tu tienda y políticas</p>
-          </div>
+    <div>
+      <div className="mb-4 lg:mb-6">
+        <div className="flex items-center gap-2 mb-2">
+          <Settings className="h-6 w-6 text-indigo-600" />
+          <h1 className="text-xl lg:text-3xl font-bold text-slate-900">Configuración</h1>
         </div>
+        <p className="text-sm text-slate-600">Información básica de tu tienda y políticas</p>
       </div>
 
-      <div className="max-w-3xl space-y-6">
-        {/* Store Information */}
+      <div className="space-y-3 lg:space-y-6 max-w-3xl">
+        {/* Store Info */}
         <Card>
           <CardHeader>
             <CardTitle>Información de la Tienda</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <div>
-              <label htmlFor="store_name" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="store_name" className="block text-sm font-medium text-slate-700 mb-1">
                 Nombre de la tienda
               </label>
-              <Input
+              <input
                 id="store_name"
                 value={config.store_name}
                 onChange={(e) => handleChange('store_name', e.target.value)}
                 placeholder="Mi Tienda ML"
+                className="input"
               />
-              <p className="text-xs text-slate-500 mt-1">
-                Este nombre aparecerá en las respuestas del bot
-              </p>
+              <p className="text-xs text-slate-500 mt-1">Aparecerá en las respuestas del bot</p>
             </div>
 
             <div>
-              <label htmlFor="tone" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="tone" className="block text-sm font-medium text-slate-700 mb-1">
                 Tono de comunicación
               </label>
               <select
                 id="tone"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="input"
                 value={config.tone}
                 onChange={(e) => handleChange('tone', e.target.value)}
               >
@@ -99,9 +81,6 @@ export default function SettingsPage() {
                 <option value="casual">Casual</option>
                 <option value="formal">Formal</option>
               </select>
-              <p className="text-xs text-slate-500 mt-1">
-                Define el estilo de comunicación del bot
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -111,101 +90,68 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle>Políticas de la Tienda</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label htmlFor="shipping_policy" className="block text-sm font-medium text-slate-700 mb-2">
-                Política de envíos
-              </label>
-              <Textarea
-                id="shipping_policy"
-                value={config.shipping_policy}
-                onChange={(e) => handleChange('shipping_policy', e.target.value)}
-                rows={3}
-                placeholder="Información sobre envíos, tiempos de procesamiento, etc."
-              />
-            </div>
-
-            <div>
-              <label htmlFor="return_policy" className="block text-sm font-medium text-slate-700 mb-2">
-                Política de devoluciones
-              </label>
-              <Textarea
-                id="return_policy"
-                value={config.return_policy}
-                onChange={(e) => handleChange('return_policy', e.target.value)}
-                rows={3}
-                placeholder="Condiciones para devoluciones, plazos, etc."
-              />
-            </div>
-
-            <div>
-              <label htmlFor="warranty_policy" className="block text-sm font-medium text-slate-700 mb-2">
-                Política de garantía
-              </label>
-              <Textarea
-                id="warranty_policy"
-                value={config.warranty_policy}
-                onChange={(e) => handleChange('warranty_policy', e.target.value)}
-                rows={3}
-                placeholder="Información sobre garantías, qué cubren, plazos, etc."
-              />
-            </div>
-
-            <div>
-              <label htmlFor="invoice_info" className="block text-sm font-medium text-slate-700 mb-2">
-                Información de facturación
-              </label>
-              <Textarea
-                id="invoice_info"
-                value={config.invoice_info}
-                onChange={(e) => handleChange('invoice_info', e.target.value)}
-                rows={2}
-                placeholder="Tipos de factura que emites, condiciones especiales, etc."
-              />
-            </div>
+          <CardContent className="space-y-3">
+            {[
+              { id: 'shipping_policy', label: 'Política de envíos', rows: 2 },
+              { id: 'return_policy', label: 'Política de devoluciones', rows: 2 },
+              { id: 'warranty_policy', label: 'Política de garantía', rows: 2 },
+              { id: 'invoice_info', label: 'Información de facturación', rows: 2 },
+            ].map(({ id, label, rows }) => (
+              <div key={id}>
+                <label htmlFor={id} className="block text-sm font-medium text-slate-700 mb-1">
+                  {label}
+                </label>
+                <textarea
+                  id={id}
+                  value={config[id as keyof typeof config]}
+                  onChange={(e) => handleChange(id as keyof typeof config, e.target.value)}
+                  rows={rows}
+                  className="textarea text-sm"
+                />
+              </div>
+            ))}
           </CardContent>
         </Card>
 
-        {/* Variables Help */}
+        {/* Variables */}
         <Card>
           <CardHeader>
             <CardTitle>Variables Disponibles</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="font-medium text-slate-700 mb-2">En los prompts puedes usar:</p>
-                <div className="space-y-1 font-mono text-xs">
-                  <p><span className="bg-slate-100 px-1 rounded">{'{store_name}'}</span> → {config.store_name}</p>
-                  <p><span className="bg-slate-100 px-1 rounded">{'{shipping_policy}'}</span> → Política de envíos</p>
-                  <p><span className="bg-slate-100 px-1 rounded">{'{return_policy}'}</span> → Política de devoluciones</p>
+            <div className="space-y-1.5 text-xs">
+              {[
+                ['{store_name}', config.store_name],
+                ['{shipping_policy}', 'Política de envíos'],
+                ['{return_policy}', 'Política de devoluciones'],
+                ['{warranty_policy}', 'Política de garantía'],
+                ['{invoice_info}', 'Info de facturación'],
+              ].map(([variable, desc], i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs flex-shrink-0">{variable}</code>
+                  <span className="text-slate-500 truncate">→ {desc}</span>
                 </div>
-              </div>
-              <div className="space-y-1 font-mono text-xs">
-                <p><span className="bg-slate-100 px-1 rounded">{'{warranty_policy}'}</span> → Política de garantía</p>
-                <p><span className="bg-slate-100 px-1 rounded">{'{invoice_info}'}</span> → Info de facturación</p>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
         {/* Actions */}
-        <div className="flex gap-4">
-          <Button onClick={handleSave} loading={isSaving} className="flex-1">
-            <Save className="h-4 w-4 mr-2" />
-            {saved ? 'Guardado ✓' : 'Guardar Cambios'}
-          </Button>
-          
-          <Button variant="outline" onClick={handleReset}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Resetear
-          </Button>
+        <div className="flex gap-3">
+          <button onClick={handleSave} disabled={isSaving} className={`btn btn-primary flex-1 ${isSaving ? 'loading' : ''}`}>
+            <Save className="h-4 w-4" />
+            {saved ? 'Guardado ✓' : isSaving ? 'Guardando...' : 'Guardar'}
+          </button>
+          <button onClick={handleReset} className="btn btn-outline">
+            <RotateCcw className="h-4 w-4" />
+            Reset
+          </button>
         </div>
 
         {saved && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
             <p className="text-sm text-green-800">
-              ✅ Configuración guardada correctamente. Los cambios se aplicarán en las próximas respuestas del bot.
+              ✅ Configuración guardada. Los cambios se aplicarán en las próximas respuestas.
             </p>
           </div>
         )}
