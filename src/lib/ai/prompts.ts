@@ -4,6 +4,7 @@ interface PromptParams {
   sellerConfig: SellerConfig
   promptType: 'presale' | 'postsale'
   knowledgeEntries?: KnowledgeEntry[]
+  knowledgeContext?: string
   itemTitle?: string
   itemPrice?: number
   buyerText: string
@@ -31,7 +32,7 @@ function replaceVariables(text: string, config: SellerConfig): string {
 }
 
 export function buildPrompt(params: PromptParams): { system: string; user: string } {
-  const { sellerConfig, promptType, knowledgeEntries = [], itemTitle, itemPrice, buyerText } = params
+  const { sellerConfig, promptType, knowledgeEntries = [], knowledgeContext, itemTitle, itemPrice, buyerText } = params
 
   // Select the appropriate base prompt
   const basePrompt = promptType === 'presale' 
@@ -41,8 +42,12 @@ export function buildPrompt(params: PromptParams): { system: string; user: strin
   // Replace variables in the prompt
   let systemPrompt = replaceVariables(basePrompt, sellerConfig)
 
-  // Add knowledge base if available
-  if (knowledgeEntries.length > 0) {
+  // Add knowledge base context (from new KB system)
+  if (knowledgeContext) {
+    systemPrompt += `\n\n---\n\n${knowledgeContext}`
+  }
+  // Fallback: old-style knowledge entries
+  else if (knowledgeEntries.length > 0) {
     const knowledgeText = knowledgeEntries
       .map(entry => `${entry.title}: ${entry.content}`)
       .join('\n\n')
